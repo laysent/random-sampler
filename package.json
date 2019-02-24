@@ -1,6 +1,6 @@
 {
   "name": "random-sampler",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "provide shuffle and random sampling api, weighted random sampling algorithm included",
   "main": "build/main/index.js",
   "typings": "build/main/index.d.ts",
