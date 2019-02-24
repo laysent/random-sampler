@@ -98,3 +98,42 @@ console.log(result);
 When weights are provided, the element with larger weight will be more likely to be shown in front of sample result.
 
 **Notice**: sample API will not mutate given array, but instead, it will produce a new array as result.
+
+### Asynchronous Sampling
+
+When data cannot be provided synchronously, it's also possible to asynchronously add all elements and get the sample result whenever whished.
+
+```javascript
+import Sampler from 'random-sampler';
+
+const sampler = new Sampler();
+const size = 2;
+const receiver = sampler.create(size);
+
+window.addEventListener('message', (event) => {
+  const data = event.data;
+  receiver.add(data);
+});
+
+// at some point:
+console.log(receiver.get());
+```
+
+`.create(number)` function will return an object with two available APIs: `add` and `get`, where `add` allows you to add elements and `get` allows you to get the result based on current status.
+
+If you provide a second parameter as a function providing weights to each element, weighted random sampling will be used. But still, the return of `create(number, function)` will provide two available options, i.e. `add` and `get` as described above.
+
+```javascript
+import Sampler from 'random-sampler';
+
+const sampler = new Sampler();
+const size = 2;
+function getWeight(element, index) { return element.length * index; }
+window.addEventListener('message', (event) => {
+  const data = event.data;
+  receiver.add(data);
+});
+
+// at some point:
+console.log(receiver.get());
+```

@@ -3,10 +3,40 @@ import WeightedReservoir from './reservoir/weighted';
 import { fisherYatesInArrayShuffle, weightedShuffle } from './shuffle';
 import { getRandomFunction } from './utils';
 
+interface Receiver<T> {
+  add: (element: T) => void;
+  get: () => T[];
+}
+
 export default class Sampler {
   private getRandom: getRandomFunction;
   constructor(getRandom = Math.random) {
     this.getRandom = getRandom;
+  }
+  public create<T>(n: number, getWeight?: (element: T, index: number) => number): Receiver<T> {
+    if (typeof getWeight !== 'undefined') {
+      const reservoir = new WeightedReservoir<T>(n, this.getRandom);
+      let i = 0;
+      return {
+        add(element: T) {
+          reservoir.add(element, getWeight(element, i));
+          i += 1;
+        },
+        get() {
+          return reservoir.get();
+        },
+      };
+    } else {
+      const reservoir = new NormalReservoir<T>(n, this.getRandom);
+      return {
+        add(element: T) {
+          reservoir.add(element);
+        },
+        get() {
+          return reservoir.get();
+        }
+      };
+    }
   }
   public sample<T>(
     iterable: Iterable<T>,
